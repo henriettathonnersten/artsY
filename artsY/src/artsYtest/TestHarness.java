@@ -18,6 +18,12 @@ public class TestHarness {
 		userTest.setHouseNumber();
 		userTest.getPostcode();
 		userTest.setPostcode();
+		userTest.getStreet();
+		userTest.setStreet();
+		userTest.getCity();
+		userTest.setCity();
+		userTest.getCounty();
+		userTest.setCounty();
 		
 		ItemTest itemTest = new ItemTest();		
 		itemTest.itemExistanceCheck();
@@ -56,13 +62,15 @@ public class TestHarness {
 		saleTest.setHouseNumber();
 		saleTest.getPostcode();
 		saleTest.setPostcode();
-		saleTest.getPurchaseDateTime();
-		saleTest.setPurchaseDateTime();
+		saleTest.getPurchaseDate();
+		saleTest.setPurchaseDate();
+		saleTest.getPurchaseTime();
+		saleTest.setPurchaseTime();
 		saleTest.getDeliveryPrice();
 		saleTest.setDeliveryPrice();
 		saleTest.getDeliveryStatus();
 		saleTest.setDeliveryStatus();
 		saleTest.returnPriceInt();
-		
 	}
+	
 }

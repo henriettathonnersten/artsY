@@ -7,7 +7,7 @@ import artsYcode.ArtsYuser;
 
 public class ArtsYuserTest {
 
-	ArtsYuser user = new ArtsYuser("name@test.co.uk", "abc123", "username", 6, "CT1 2AW");
+	ArtsYuser user = new ArtsYuser("name@test.co.uk", "abc123", "username", 6, "CT1 2AW", "Mill Lane", "Canterbury", "Kent");
 	
 	@Test
 	public void userExistanceCheck() {
@@ -67,6 +67,39 @@ public class ArtsYuserTest {
 	public void setPostcode() {
 		user.setPostcode("M50 3YJ");
 		assertEquals("Postcode is not the one expected", "M50 3YJ", user.getPostcode());
+	}
+	
+	@Test
+	public void getStreet() {
+		assertEquals("Street is not the one expected", "Mill Lane", user.getStreet());
+	}
+	
+	@Test
+	public void setStreet() {
+		user.setStreet("Canterbury Avenue");
+		assertEquals("Street is not the one expected", "Canterbury Avenue", user.getStreet());
+	}
+	
+	@Test
+	public void getCity() {
+		assertEquals("City is not the one expected", "Canterbury", user.getCity());
+	}
+	
+	@Test
+	public void setCity() {
+		user.setCity("Manchester");
+		assertEquals("City is not the one expected", "Manchester", user.getCity());
+	}
+	
+	@Test
+	public void getCounty() {
+		assertEquals("County is not the one expected", "Kent", user.getCounty());
+	}
+	
+	@Test
+	public void setCounty() {
+		user.setCounty("Greater Manchester");
+		assertEquals("County is not the one expected", "Greater Manchester", user.getCounty());
 	}
 			
 }

@@ -1,8 +1,6 @@
 package artsYcode;
 
-import java.time.LocalDateTime;
-
-public class Sale {
+public class Sale {	//implements Address 
 	
 	private static int saleIDcounter = 0;
 	private int saleID;
@@ -10,19 +8,22 @@ public class Sale {
 	private String buyer;
 	private int houseNumber;
 	private String postcode;
-	private LocalDateTime saleDateTime;
+	//private LocalDateTime saleDateTime;
+	private String saleDate;
+	private int saleTime;
 	private int deliveryPrice;
 	private char status;	
 
 	public Sale() {}
 	
-	public Sale(int itemID, String buyer, int houseNumber, String postcode, LocalDateTime saleDateTime, double deliveryPrice) {
+	public Sale(int itemID, String buyer, int houseNumber, String postcode, String saleDate, int saleTime, double deliveryPrice) {
 		this.saleID = saleIDcounter;
 		this.itemID = itemID;
 		this.buyer = buyer;
 		this.houseNumber = houseNumber;
 		this.postcode = postcode;
-		this.saleDateTime = saleDateTime;
+		this.saleDate = saleDate;
+		this.saleTime = saleTime;
 		this.deliveryPrice = priceAsInteger(deliveryPrice);
 		this.status = 'A'; //A = purchase accepted, H = being handled by seller, S = sent, D = delivered 
 		increaseIDcounter();
@@ -68,12 +69,20 @@ public class Sale {
 		this.postcode = postcode;
 	}
 
-	public LocalDateTime getSaleDateTime() {
-		return saleDateTime;
+	public String getSaleDate() {
+		return saleDate;
 	}
 
-	public void setSaleDateTime(LocalDateTime saleDateTime) {
-		this.saleDateTime = saleDateTime;
+	public void setSaleDate(String saleDate) {
+		this.saleDate = saleDate;
+	}
+	
+	public int getSaleTime() {
+		return saleTime;
+	}
+
+	public void setSaleTime(int saleTime) {
+		this.saleTime = saleTime;
 	}
 
 	public int getDeliveryPrice() {

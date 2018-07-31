@@ -9,9 +9,10 @@ public class Item {
 	private String description;
 	private int price;
 	
-	public Item() {}
+//	public Item() {}
 	
 	public Item(String seller, String title, String description, double price) {
+		//höjd, bredd, djup, vikt (för porto!)
 		this.itemID = itemIDcounter;
 		this.seller = seller;
 		this.title = title;

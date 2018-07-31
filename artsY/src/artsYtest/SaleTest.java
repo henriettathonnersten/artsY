@@ -13,8 +13,8 @@ import artsYcode.Sale;
 
 public class SaleTest {
 	
-	LocalDateTime saleDateTime = LocalDateTime.of(2014, 4, 15, 11, 30);
-	Sale sale = new Sale(0, "henrietta@test.com", 6, "CT1 2AW", saleDateTime, 5.99);
+	//LocalDateTime saleDateTime = LocalDateTime.of(2014, 4, 15, 11, 30);
+	Sale sale = new Sale(0, "henrietta@test.com", 6, "CT1 2AW", "2018-08-23", 1225, 5.99);
 	
 	@Test
 	public void saleExistanceCheck() {
@@ -75,18 +75,31 @@ public class SaleTest {
 		sale.setPostcode("M50 3YJ");
 		assertEquals("Postcode is not the one expected", "M50 3YJ", sale.getPostcode());
 	}
-		
+	
+	//////	TO BE UPDATED WHEN BETTER DATE HANDLING IS CONJURED UP
 	@Test
-	public void getPurchaseDateTime() {
-		assertEquals("The date and time fo the purchase is not the one expected", saleDateTime, sale.getSaleDateTime());
+	public void getPurchaseDate() {
+		assertEquals("The date and time fo the purchase is not the one expected", "2018-08-23", sale.getSaleDate());
 	}
 	
 	@Test
-	public void setPurchaseDateTime() {
-		LocalDateTime newPurchaseDateTime = LocalDateTime.of(2018, 5, 31, 19, 30);
-		sale.setSaleDateTime(newPurchaseDateTime);
-		assertEquals("The date and time fo the purchase is not the one expected", newPurchaseDateTime, sale.getSaleDateTime());
+	public void setPurchaseDate() {
+		sale.setSaleDate("2008-03-14");
+		assertEquals("The date and time fo the purchase is not the one expected", "2008-03-14", sale.getSaleDate());
 	}
+	
+	@Test
+	public void getPurchaseTime() {
+		assertEquals("The date and time fo the purchase is not the one expected", 1225, sale.getSaleTime());
+	}
+	
+	@Test
+	public void setPurchaseTime() {
+		sale.setSaleTime(1335);
+		assertEquals("The date and time fo the purchase is not the one expected", 1335, sale.getSaleTime());
+	}
+	
+	//////
 	
 	@Test
 	public void getDeliveryPrice() {
@@ -113,6 +126,11 @@ public class SaleTest {
 	@Test
 	public void returnPriceInt() {
 		assertEquals("The converted delivery price is not the one expected", 6666, sale.priceAsInteger(66.66), 0.00);
+	}
+	
+	@Test
+	public void calculatePostage() {
+		//placera postageberäkning i item? Utifrån mått och vikt!
 	}
 
 }

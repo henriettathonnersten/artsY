@@ -11,7 +11,7 @@ public class JDBC {
 	static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver"; 
 	static final String DB_URL = "jdbc:mysql://localhost/db_artsy"; 
 	static final String USER = "root";
-	static final String PASSWORD = "password";
+	static final String PASSWORD = "HTuk2018"; //"password" - samt uppdatera mySQL-connectorn
 	Connection connection = null;
 	Statement statement = null;
 	
@@ -27,70 +27,7 @@ public class JDBC {
         }
         return connection;
     }
-	
-	public String logIn() {
-		String returnStatement = "";
-
-		try {
-			/*connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-			statement = connection.createStatement();*/
-			
-		    //Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			//System.out.println("test!");
-			
-			//String insert = "INSERT into konstyuser VALUES ('hej@hejsan.se', 'hej', 'Hejsan_Hejsson', 7, 'M30 X77')";
-			//statement.executeUpdate(insert);
-			
-			connection = getConnection();
-			
-			/*get name and password, hamta usern om den finns. Om ja, return true, annars return false
-			 * Tank pa att detta inte kommer visas utat, sa det borde racka med en true/false return. 
-			 * */ 
-			
-			
-			String emailFromDb = "";
-			String passwordFromDb = "";
-			
-			String select = "SELECT email, password FROM artsyuser";
-			ResultSet rs = statement.executeQuery(select);
-			while (rs.next()) {
-				emailFromDb = rs.getString("email");
-				passwordFromDb = rs.getString("password");
-				returnStatement += emailFromDb + " " + passwordFromDb;
-			}
-			rs.close();			
-			
-			/*if (emailFromDb == inputEmail && passwordFromDb == inputPassword) 
-				returnStatement =
-			else
-				returnStatement =*/
-					
-		} 
-		catch (SQLException e) {
-			//io?
-			e.printStackTrace();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				if (statement != null)
-					statement.close();
-			}
-			catch(SQLException e) {	}
-			
-			try {
-				if(connection != null)
-					connection.close();
-			}
-			catch(SQLException e) { }
-		}
 		
-		return returnStatement;
-
-	}
-	
 	public boolean logIn(String email, String password) {
 		boolean loggedIn = false;
 
@@ -102,6 +39,12 @@ public class JDBC {
 			while (rs.next()) {
 				loggedIn = true;
 			}
+			/*
+			while (rs == null) {
+				//Felmeddelande
+				System.out.println("Error message");
+			}
+			*/
 			rs.close();								
 		} 
 		catch (SQLException e) {
@@ -128,7 +71,7 @@ public class JDBC {
 		return loggedIn;
 	}
 	
-	public ArtsYuser addUser(ArtsYuser user) {
+	public boolean addUser(ArtsYuser user) {
 		boolean userAdded = false;
 
 		try {
@@ -136,18 +79,21 @@ public class JDBC {
 			statement = connection.createStatement();
 
 			String postcodeQuery = "INSERT INTO postcode (postcode, street, city, county) VALUES ('" + 
-									user.getPostcode() + "', '" + user.getStreet() + "', '" + user.getCity()  +  "', '" + user.getCounty() + "')";		
-			//System.out.println(postcodeQuery);			
+									user.getPostcode() + "', '" + user.getStreet() + "', '" + user.getCity()  +  "', '" + user.getCounty() + "')";					
 			statement.executeUpdate(postcodeQuery);
+			//CHECK FOR DUBBLETTER!!!!!!! (eller ska samtliga addresser läggas in innan? Nej. Orimligt. Låt dbn växa med purchases.)
 					
 			String addressQuery = "INSERT INTO address (houseNo, postcode) VALUES (" + user.getHouseNumber() + ", '" + user.getPostcode() + "');";		
-			//System.out.println(addressQuery);			
 			statement.executeUpdate(addressQuery);
-					
+			//CHECK FOR DUBBLETTER!!!!!!!
+
+			
 			String userQuery = "INSERT INTO artsyuser (email, password, name, defaultHouseNo, defaultPostcode) VALUES ('" + 
 							user.getEmail() + "', '" + user.getEmail() + "', '" + user.getUsername() + "', " + user.getHouseNumber() + ", '" + user.getPostcode() + "');";
-			//System.out.println(userQuery);			
-			statement.executeUpdate(userQuery);			
+			//CHECK FOR DUBBLETTER!!!!!!!
+			
+			if (statement.executeUpdate(userQuery) > 0)
+				userAdded = true;
 		} 
 		catch (SQLException e) {
 			//io?
@@ -170,38 +116,46 @@ public class JDBC {
 			catch(SQLException e) { }
 		}
 		
-		return loggedIn;
+		return userAdded;
 	}
 	
-	public String addUser(String username, String email, String password, String street, 
-				String houseNumber, String apartment, String postcode, String city, String county) {
-		
+	public boolean addItem (Item item) {
+		boolean itemAdded = false;
+
 		try {
+			connection = getConnection();		
+			statement = connection.createStatement();
 			
-			connection = getConnection();
+			String itemQuery = "INSERT INTO item (itemID, seller, title, description, price) VALUES ('" + 
+									item.getItemID() + "', '" + item.getSeller() + "', '" + item.getTitle() + "', '" 
+									+ item.getDescription() +  "', '" + item.getPrice() + "')";					
+			//CHECK FOR DUBBLETTER!!!!!!! (eller? IDt är ju det enda unika)
 			
-			/*connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-			statement = connection.createStatement();*/
-			String postcodeQuery = "INSERT INTO postcode (postcode, street, city, county) VALUES ('" + 
-			postcode + "', '" + street + "', '" + city  +  "', '" + county + "')";		
-			//System.out.println(postcodeQuery);			
-			statement.executeUpdate(postcodeQuery);
-			
-			String addressQuery = "INSERT INTO address (houseNo, postcode) VALUES (" + houseNumber + ", '" + postcode + "');";		
-			//System.out.println(addressQuery);			
-			statement.executeUpdate(addressQuery);
-			
-			String userQuery = "INSERT INTO artsyuser (email, password, name, defaultHouseNo, defaultPostcode) VALUES ('" + 
-					email + "', '" + password + "', '" + username + "', " + houseNumber + ", '" + postcode + "');";
-			//System.out.println(userQuery);			
-			statement.executeUpdate(userQuery);			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			if (statement.executeUpdate(itemQuery) > 0)
+				itemAdded = true;
+		} 
+		catch (SQLException e) {
 			e.printStackTrace();
 		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (statement != null)
+					statement.close();
+			}
+			catch(SQLException e) {	}
+			
+			try {
+				if(connection != null)
+					connection.close();
+			}
+			catch(SQLException e) { }
+		}
 		
-
-		return "hej";
+		return itemAdded;
 	}
+	
+	
 }

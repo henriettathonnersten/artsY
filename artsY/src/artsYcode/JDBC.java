@@ -39,12 +39,6 @@ public class JDBC {
 			while (rs.next()) {
 				loggedIn = true;
 			}
-			/*
-			while (rs == null) {
-				//Felmeddelande
-				System.out.println("Error message");
-			}
-			*/
 			rs.close();								
 		} 
 		catch (SQLException e) {
@@ -71,29 +65,36 @@ public class JDBC {
 		return loggedIn;
 	}
 	
-	public boolean addUser(ArtsYuser user) {
+	public boolean addUser(ArtsYuser user, Address address) {
 		boolean userAdded = false;
 
 		try {
 			connection = getConnection();		
 			statement = connection.createStatement();
 
-			String postcodeQuery = "INSERT INTO postcode (postcode, street, city, county) VALUES ('" + 
-									user.getPostcode() + "', '" + user.getStreet() + "', '" + user.getCity()  +  "', '" + user.getCounty() + "')";					
-			statement.executeUpdate(postcodeQuery);
-			//CHECK FOR DUBBLETTER!!!!!!! (eller ska samtliga addresser läggas in innan? Nej. Orimligt. Låt dbn växa med purchases.)
-					
-			String addressQuery = "INSERT INTO address (houseNo, postcode) VALUES (" + user.getHouseNumber() + ", '" + user.getPostcode() + "');";		
-			statement.executeUpdate(addressQuery);
-			//CHECK FOR DUBBLETTER!!!!!!!
-
+			if (!checkForExistingPostcode(address, connection, statement))	{
+				String postcodeQuery = "INSERT INTO postcode (postcode, street, city, county) VALUES ('" + 
+									address.getPostcode() + "', '" + address.getStreet() + "', '" + address.getCity()  
+									+  "', '" + address.getCounty() + "')";					
+						
+				statement.executeUpdate(postcodeQuery);
+			}
 			
-			String userQuery = "INSERT INTO artsyuser (email, password, name, defaultHouseNo, defaultPostcode) VALUES ('" + 
-							user.getEmail() + "', '" + user.getEmail() + "', '" + user.getUsername() + "', " + user.getHouseNumber() + ", '" + user.getPostcode() + "');";
-			//CHECK FOR DUBBLETTER!!!!!!!
+			if (!checkForExistingAddress(address, connection, statement)) {
+				String addressQuery = "INSERT INTO address (houseNo, postcode) VALUES (" + address.getHouseNumber() 
+									+ ", '" + address.getPostcode() + "');";		
 			
-			if (statement.executeUpdate(userQuery) > 0)
-				userAdded = true;
+				statement.executeUpdate(addressQuery);
+			}
+			
+			if (!checkForExistingUser(user, connection, statement)) {
+				String userQuery = "INSERT INTO artsyuser (email, password, name, defaultHouseNo, defaultPostcode) VALUES ('" + 
+								user.getEmail() + "', '" + user.getEmail() + "', '" + user.getUsername() + "', " + address.getHouseNumber() 
+								+ ", '" + address.getPostcode() + "');";
+			
+				if (statement.executeUpdate(userQuery) > 0)
+					userAdded = true;
+			}
 		} 
 		catch (SQLException e) {
 			//io?
@@ -126,14 +127,16 @@ public class JDBC {
 			connection = getConnection();		
 			statement = connection.createStatement();
 			
-			String itemQuery = "INSERT INTO item (itemID, seller, title, description, price) VALUES ('" + 
-									item.getItemID() + "', '" + item.getSeller() + "', '" + item.getTitle() + "', '" 
-									+ item.getDescription() +  "', '" + item.getPrice() + "')";					
-			//CHECK FOR DUBBLETTER!!!!!!! (eller? IDt är ju det enda unika)
+			if (checkForExistingItem(item, connection, statement)) {
+				String itemQuery = "INSERT INTO item (itemID, seller, title, description, price) VALUES ('" + 
+						item.getItemID() + "', '" + item.getSeller() + "', '" + item.getTitle() + "', '" 
+						+ item.getDescription() +  "', '" + item.getPrice() + "')";					
+
+				if (statement.executeUpdate(itemQuery) > 0)
+					itemAdded = true;
+			}
 			
-			if (statement.executeUpdate(itemQuery) > 0)
-				itemAdded = true;
-		} 
+		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -156,6 +159,165 @@ public class JDBC {
 		
 		return itemAdded;
 	}
+	
+	public boolean addFavourite (Item item, ArtsYuser user) {
+		boolean favouriteAdded = false;
+
+		try {
+			connection = getConnection();		
+			statement = connection.createStatement();
+			
+			System.out.println("här");
+			
+			if (checkForExistingItem(item, connection, statement) && checkForExistingUser(user, connection, statement)) {
+				String addFavouriteQuery = "INSERT INTO favourite (userID, itemID) VALUES ('" + 
+						user.getEmail() + "', '" + item.getItemID() + "')";					
+				System.out.println("HÄR");
+				if (statement.executeUpdate(addFavouriteQuery) > 0) {
+					favouriteAdded = true;
+					System.out.println("här också");
+				}
+			}
+			
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (statement != null)
+					statement.close();
+			}
+			catch(SQLException e) {	}
+			
+			try {
+				if(connection != null)
+					connection.close();
+			}
+			catch(SQLException e) { }
+		}
+		
+		return favouriteAdded;
+	}	
+	
+	public boolean removeFavourite(Item item, ArtsYuser user) {
+		boolean favouriteRemoved = false;
+
+		try {
+			connection = getConnection();		
+			statement = connection.createStatement();
+			
+			if (checkForExistingItem(item, connection, statement) && checkForExistingUser(user, connection, statement)) {
+				String removeFavouriteQuery = "DELETE FROM favourites WHERE userID = '" +
+						user.getEmail() + "' AND itemID = '" + item.getItemID() + "'"; 				
+				if (statement.executeUpdate(removeFavouriteQuery) > 0)
+					favouriteRemoved = true;
+			}
+			
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally {
+			try {
+				if (statement != null)
+					statement.close();
+			}
+			catch(SQLException e) {	}
+			
+			try {
+				if(connection != null)
+					connection.close();
+			}
+			catch(SQLException e) { }
+		}
+		
+		return favouriteRemoved;
+	}
+	
+	public boolean checkForExistingPostcode(Address address, Connection connection, Statement statement) {
+		boolean postcodeExists = true;
+		
+		String checkForPostcode = "SELECT * FROM postcode WHERE postcode = '" + address.getPostcode() + "'";
+		try {
+			ResultSet rs = statement.executeQuery(checkForPostcode);		
+			while (!rs.next()) {
+				postcodeExists = false;
+			}
+			rs.close();	
+		} 
+		catch (SQLException e) {
+			System.out.println("Error trying to check for postcode");
+			e.printStackTrace();
+		}
+		
+		return postcodeExists;		
+	}
+	
+	public boolean checkForExistingAddress(Address address, Connection connection, Statement statement) {
+		boolean addressExists = true;
+		
+		String checkForAddress = "SELECT * FROM address WHERE houseNo = '" + address.getHouseNumber() + "' AND postcode = '" + address.getPostcode() + "'";
+		try {		
+			ResultSet rs = statement.executeQuery(checkForAddress);		
+			while (!rs.next()) {
+				addressExists = false;
+			}
+			rs.close();	
+		} 
+		catch (SQLException e) {
+			System.out.println("Error trying to check for address");
+			e.printStackTrace();
+		}
+		
+		return addressExists;	
+	}
+	
+	public boolean checkForExistingUser(ArtsYuser user, Connection connection, Statement statement) { 
+		boolean userExists = true;
+		
+		String checkForUser = "SELECT * FROM artsYuser WHERE email = '" + user.getEmail() + "'";
+		try {		
+			ResultSet rs = statement.executeQuery(checkForUser);		
+			while (!rs.next()) {
+				userExists = false; 
+			}
+			rs.close();	
+		} 
+		catch (SQLException e) {
+			System.out.println("Error trying to check for user");
+			e.printStackTrace();
+		}
+		
+		return userExists;		
+	}
+	
+	public boolean checkForExistingItem(Item item, Connection connection, Statement statement) { 
+		boolean itemExists = true;
+		
+		String checkForItem = "SELECT * FROM item WHERE itemID = '" + item.getItemID() + "'";
+		try {		
+			ResultSet rs = statement.executeQuery(checkForItem);		
+			while (!rs.next()) {
+				itemExists = false;
+				break;
+			}
+			rs.close();	
+		} 
+		catch (SQLException e) {
+			System.out.println("Error trying to check for item");
+			e.printStackTrace();
+		}
+		
+		return itemExists;		
+	}
+	
 	
 	
 }

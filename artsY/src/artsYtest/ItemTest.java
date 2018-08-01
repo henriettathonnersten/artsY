@@ -17,7 +17,7 @@ public class ItemTest {
 	
 	@Test
 	public void getItemID() {
-		assertEquals("The item ID is not the one expected", 0, item.getItemID());
+		assertEquals("The item ID is not the one expected", 1, item.getItemID());
 	}
 	
 	@Test

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import artsYcode.Address;
 import artsYcode.ArtsYuser;
 import artsYcode.Item;
 import artsYcode.JDBC;
@@ -15,7 +16,8 @@ import artsYcode.Sale;
 public class JDBCTest {
 	
 	JDBC database = new JDBC();
-	ArtsYuser user = new ArtsYuser("heppy@email.c.uk", "passwordet", "Testersson", 6, "AB14CD", "Silly Street", "Manchester", "Greater Manchester");
+	ArtsYuser user = new ArtsYuser("heppy@email.c.uk", "passwordet", "Testersson");
+	Address address = new Address(6, "AB14CD", "Silly Street", "Manchester", "Greater Manchester");
 	Item item = new Item("henrietta.thonnersten@academytrainee.com", "Title of item", "Description for item", 25.69); 
 	Sale sale = new Sale(1, "e@test.com", 7, "CT1 3HG", "2018-02-02", 1225, 5.99);
 	
@@ -31,19 +33,40 @@ public class JDBCTest {
 	
 	@Test
 	public void addUser() {
-		assertEquals("User was not added", true, database.addUser(user));		//i user
+		assertEquals("User was not added", true, database.addUser(user, address));		//i user???
 	}
 	
+	@Test
+	public void tryDuplicateUser() {
+		assertEquals("User was added", false, database.addUser(user, address));		//i user???
+	}
 	
 	@Test
 	public void addItem() {
 		assertEquals("Item was not added", true, database.addItem(item));		//i item
 	}
 	
+	@Test
+	public void tryDuplicateItem() {
+		assertEquals("Item was added", false, database.addItem(item));		//i item
+	}
+	
+	@Test
+	public void addFavourite() {
+		Item item = new Item("a@test.com", "Painting 1", "A painting, painted using pencil.", 30.00); 
+		assertEquals("Favourite was not added", true, database.addFavourite(item, user));	//i user eller item?
+	}
+	
+	@Test
+	public void removeFavourite() {
+		
+		assertEquals("Favourite was not removed", true, database.removeFavourite(item, user));	//i user eller item?
+	}
+	
 	/*
 	
 	@Test
-	public void displayItem() {
+	public void displayItemInfo() {
 		assertEquals("Item not found", "OBJECT INNEHÅLLANDE ITEM TO DISPLAY", database.getItem()); 	//detta ska inte vara i Item-classen? 
 	}
 
@@ -81,17 +104,6 @@ public class JDBCTest {
 		int sellerID = 2;				
 		assertEquals("Postage could not be calculated", "COST OF POSTAGE OF AN ITEM", database.calculatePostage(item, buyerID, sellerID));	//i item?
 	} 
-	
-	@Test
-	public void addFavourite() {
-		assertEquals("Favourite was not added", true, database.addFavourite(item, user));	//i user eller item?
-
-	}
-
-	@Test
-	public void removeFavourite() {
-		assertEquals("Favourite was not removed", true, database.removeFavourite(item, user));	//i user eller item?
-	}
 	
 	@Test
 	public void removeItem() {

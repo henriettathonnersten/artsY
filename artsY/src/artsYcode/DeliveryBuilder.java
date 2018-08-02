@@ -13,7 +13,5 @@ public class DeliveryBuilder {
 		Delivery delivery = new Delivery();
 		return new Delivery();
 	}
-	
-
 
 }

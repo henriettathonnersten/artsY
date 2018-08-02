@@ -53,53 +53,58 @@ public class JDBCTest {
 	
 	@Test
 	public void addFavourite() {
-		Item item = new Item("a@test.com", "Painting 1", "A painting, painted using pencil.", 30.00); 
+		Item item = new Item("a@test.com", "Painting 1", "A painting, painted using pencil.", 30.00);
+		ArtsYuser user = new ArtsYuser("c@test.com", "hej123", "c_user"); 
 		assertEquals("Favourite was not added", true, database.addFavourite(item, user));	//i user eller item?
 	}
 	
 	@Test
-	public void removeFavourite() {
-		
+	public void removeFavourite() {		
 		assertEquals("Favourite was not removed", true, database.removeFavourite(item, user));	//i user eller item?
 	}
 	
 	/*
-	
 	@Test
 	public void displayItemInfo() {
 		assertEquals("Item not found", "OBJECT INNEHÅLLANDE ITEM TO DISPLAY", database.getItem()); 	//detta ska inte vara i Item-classen? 
+		//SELECT * FROM item WHERE itemID = ID PARAMETER;
 	}
 
 	
 	@Test
 	public void sale() {
-		assertEquals("Sale not added", true, database.perfomSale(sale));	//i sale
+		assertEquals("Sale not added", true, database.perfomSale(sale));	//i sale		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		
 	}
 	
 	@Test 
 	public void searchTest() {
 		assertEquals("Nothing found", "lista(?) INNEHÅLLANDE ITEM TO DISPLAY", database.getSearchResults());	//eller bara kolla så att det inte är null?
 		assertNotNull(database.getSearchResults());										// VAR placera?
+		//SELECT * FROM item WHERE title LIKE '%6%' or description LIKE '%pa%';
 	}
 	
 	@Test
 	public void getOverviewOfSales() {
 		assertEquals("No sales found", "lista(?) INNEHÅLLANDE ITEM TO DISPLAY", database.getSalesOverview(user)); //eller bara kolla så att det inte är null?
+		//SELECT * FROM sale, item WHERE sale.item = item.itemID AND seller = "email address from logged in user (the seller)"
 	}																					//i user
 	
 	@Test
 	public void getOverviewOfPurchases() {
 		assertEquals("No purchases found", "lista(?) INNEHÅLLANDE ITEM TO DISPLAY", database.getPurchaseOverview(user)); //eller bara kolla så att det inte är null?
+		//SELECT * FROM sale WHERE buyer = "email address from logged in user (the buyer)";
 	}																					//i user
 	
 	@Test
 	public void addReview() {
 		int reviewID = 1;	//remove this, and just add 1 instead
-		assertEquals("Review not added", true, database.addReview(reviewID));	//i review
+		assertEquals("Review not added", true, database.addReview(saleID));	//i review
+		//INSERT INTO review (reviewID, sale, ratingValue, ratingText) VALUES ('"+ +"', '"+ saleID +"', '"+ +"', '"+ +"'); //review.Getters
 	}
 	
 	@Test
-	public void calculateDelivery() {
+	public void calculateDelivery() {		!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		int buyerID = 1;
 		int sellerID = 2;				
 		assertEquals("Postage could not be calculated", "COST OF POSTAGE OF AN ITEM", database.calculatePostage(item, buyerID, sellerID));	//i item?
@@ -108,6 +113,7 @@ public class JDBCTest {
 	@Test
 	public void removeItem() {
 		assertEquals("Item not removed", true, database.removeItem(item));	//i item
+		DELETE FROM item WHERE itemID = ' + "item.getItemID() + "'; 
 	}
 	*/
 	

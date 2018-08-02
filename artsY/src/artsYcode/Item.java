@@ -11,7 +11,7 @@ public class Item {
 	
 //	public Item() {}
 	
-	public Item(String seller, String title, String description, double price) {
+	public Item(String seller, String title, String description, double price) { //, int postage
 		//höjd, bredd, djup, vikt (för porto!)
 		this.itemID = itemIDcounter;
 		this.seller = seller;

@@ -11,7 +11,7 @@ public class JDBC {
 	static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver"; 
 	static final String DB_URL = "jdbc:mysql://localhost/db_artsy"; 
 	static final String USER = "root";
-	static final String PASSWORD = "HTuk2018"; //"password" - samt uppdatera mySQL-connectorn
+	static final String PASSWORD = "password"; //"HTuk2018" - samt uppdatera mySQL-connectorn
 	Connection connection = null;
 	Statement statement = null;
 	
@@ -172,7 +172,7 @@ public class JDBC {
 			if (checkForExistingItem(item, connection, statement) && checkForExistingUser(user, connection, statement)) {
 				String addFavouriteQuery = "INSERT INTO favourite (userID, itemID) VALUES ('" + 
 						user.getEmail() + "', '" + item.getItemID() + "')";					
-				System.out.println("HÄR");
+	
 				if (statement.executeUpdate(addFavouriteQuery) > 0) {
 					favouriteAdded = true;
 					System.out.println("här också");
@@ -287,6 +287,7 @@ public class JDBC {
 			ResultSet rs = statement.executeQuery(checkForUser);		
 			while (!rs.next()) {
 				userExists = false; 
+				break;
 			}
 			rs.close();	
 		} 
